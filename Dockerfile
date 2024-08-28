@@ -6,7 +6,7 @@ RUN apt-get update
 
     
 
-RUN apt-get update &&  apt-get install --no-install-recommends -y jq librsvg2-2 libpq-dev libssl-dev libv8-dev  libsodium-dev libcurl4-openssl-dev libsasl2-dev  odbc-postgresql gdal-bin libgdal-dev libxml2-dev libpq-dev libglpk-dev
+RUN apt-get update &&  apt-get install --no-install-recommends -y jq librsvg2-2 libpq-dev libssl-dev libv8-dev  libsodium-dev libsecret-1-dev libcurl4-openssl-dev libsasl2-dev  odbc-postgresql gdal-bin libgdal-dev libxml2-dev libpq-dev libglpk-dev
 RUN echo "[postgresql]\nDriver          = /usr/lib/x86_64-linux-gnu/odbc/psqlodbcw.so" >> /etc/odbcinst.ini
 
 ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
