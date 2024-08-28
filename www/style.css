@@ -1,0 +1,43 @@
+div.outer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+
+.card-body{
+  background-image: url(liquid-cheese.svg);
+  background-attachment: fixed; 
+  background-size: cover;
+}
+
+.card {
+
+  border-radius: 8px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  pointer-events: auto;
+  cursor: pointer;
+
+    
+}
+
+
+@media (min-width: 576px)
+{
+.mdx .modal-lg,.mdx .modal-xl,.mdx .modal-dialog,.mdx modal-content,.mdx modal-body {
+  
+    max-width: 100%;
+    padding-left:50%;
+    margin-right: 0;
+    margin-top: -1px;
+    margin-bottom: 0;
+}
+}
+
+.mdx .modal-content{
+      height:100vh;
+}
