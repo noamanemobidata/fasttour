@@ -37,6 +37,10 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   
   
+  depot <- reactiveValues(coords=home_base)
+  
+  
+  
   output$map_ui <- renderUI({
 
     div(
@@ -56,15 +60,19 @@ server <- function(input, output, session) {
         "function(el, x) {
           L.control.zoom({position:'topright'}).addTo(this);
         }")%>%
-      addAwesomeMarkers(data = home_base, icon = awesomeIcons("home"),options = markerOptions(riseOnHover = T),layerId = 'home') %>%
-      setView(lng = home_base$lon, lat = home_base$lat, zoom = 11)
+      addAwesomeMarkers(data = depot$coords, icon = awesomeIcons("home"),options = markerOptions(interactive = T, riseOnHover = T,draggable = T),layerId = 'home') %>%
+      setView(lng = depot$coords$lon, lat = depot$coords$lat, zoom = 11)
     
       
     
   })
   
   
+  observeEvent(input$map_init_marker_dragend, {
+   
+    depot$coords <- data.frame(lon=input$map_init_marker_dragend$lng, lat= input$map_init_marker_dragend$lat)
   
+    })
   
   output$model_input <- renderUI({
     
@@ -197,7 +205,7 @@ server <- function(input, output, session) {
       style="text-align:center;", 
       h1(n, style="color:#DB4437;height:50%;font-size: 60px;"), 
       h4("Stops planned", style="color:#F4B400;height:50%;" ), 
-      tags$i(HTML('<i class="fas fa-info-circle"></i> You can add stops by clicking on the map and edit them by clicking on the marker.'))
+      tags$i(HTML('<i class="fas fa-info-circle"></i> You can add stops by clicking on the map and edit them by clicking on the marker.<br> You can change depot location by grag and drop '))
       
     )
     
@@ -426,8 +434,8 @@ server <- function(input, output, session) {
     vehicles <-vehicles(
       id =1:nrow(vehs),
       profile = vehs$profile, 
-      start = home_base,
-      end = home_base,
+      start = depot$coords,
+      end = depot$coords,
       capacity = vehs$capacity,
       time_window = vehs$time_window
     )
@@ -463,8 +471,8 @@ server <- function(input, output, session) {
     leafletProxy("map_init") %>%
       leaflet::clearShapes()%>%
       leaflet::clearMarkers() %>%
-      addAwesomeMarkers(data = home_base, icon = awesomeIcons("home"),options = markerOptions(riseOnHover = T),layerId = 'home') %>%
-      setView(lng = home_base$lon, lat = home_base$lat, zoom = 11)
+      addAwesomeMarkers(data = depot$coords, icon = awesomeIcons("home"),options = markerOptions(riseOnHover = T),layerId = 'home') %>%
+      setView(lng = depot$coords$lon, lat = depot$coords$lat, zoom = 11)
     
     data_input$locations <- NULL
     solution$res  <- NULL
@@ -542,5 +550,6 @@ server <- function(input, output, session) {
   
   
 }
+
 
 shiny::shinyApp(ui, server,options = list(port =3838 ,host = "0.0.0.0"))
