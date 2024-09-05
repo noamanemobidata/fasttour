@@ -471,7 +471,7 @@ server <- function(input, output, session) {
     leafletProxy("map_init") %>%
       leaflet::clearShapes()%>%
       leaflet::clearMarkers() %>%
-      addAwesomeMarkers(data = depot$coords, icon = awesomeIcons("home"),options = markerOptions(riseOnHover = T),layerId = 'home') %>%
+      addAwesomeMarkers(data = depot$coords, icon = awesomeIcons("home"),options = markerOptions(riseOnHover = T,interactive = T, riseOnHover = T,draggable = T),layerId = 'home') %>%
       setView(lng = depot$coords$lon, lat = depot$coords$lat, zoom = 11)
     
     data_input$locations <- NULL
