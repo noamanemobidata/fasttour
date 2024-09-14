@@ -1,9 +1,13 @@
 FROM rstudio/r-base:4.4.1-focal
 
-# Combine RUN commands to reduce layers
+# Ajout du dépôt Ubuntugis pour obtenir les dernières versions de GDAL et PROJ
 RUN apt-get update && \
-    apt-get install -y \
-        software-properties-common \
+    apt-get install -y software-properties-common && \
+    add-apt-repository -y ppa:ubuntugis/ppa && \
+    apt-get update
+
+# Installer les dépendances système nécessaires
+RUN apt-get install -y \
         libgdal-dev \
         libgeos-dev \
         libproj-dev \
@@ -21,36 +25,34 @@ RUN apt-get update && \
         libsasl2-dev \
         odbc-postgresql \
         libxml2-dev \
-        libglpk-dev && \
-    add-apt-repository ppa:ubuntugis/ppa && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends \
+        libglpk-dev \
         proj-data \
         proj-bin && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Set up R environment
-RUN mkdir -p ~/.R && \
-    echo "PROJ_LIBS=/usr/lib" >> ~/.R/Makevars && \
-    echo "PROJ_CPPFLAGS=-I/usr/include" >> ~/.R/Makevars
-
+# Définir les variables d'environnement pour GDAL, PROJ et GEOS
 ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
 ENV C_INCLUDE_PATH=/usr/include/gdal
+ENV PROJ_LIB=/usr/share/proj
+ENV GDAL_DATA=/usr/share/gdal
 
-# Install R packages
-RUN R -e "install.packages(c('renv', 'terra'), repos = c(CRAN = 'https://cloud.r-project.org'))"
+# Installer les packages R de base et renv
+RUN R -e "install.packages('renv', repos = 'https://cloud.r-project.org')"
 
+# Copier le fichier renv.lock avant de restaurer les dépendances
 COPY renv.lock /renv.lock
-RUN R -e 'renv::restore()'
+RUN R -e "renv::restore()"
 
-# Copy application files
+# Copier les fichiers de l'application
 COPY www/ /app/www
 COPY app.R utils.R /app/
 
-# Set up the working directory and expose port
+# Définir le répertoire de travail
 WORKDIR /app
+
+# Exposer le port pour Shiny (ou l'application web)
 EXPOSE 3838
 
-# Run the application
+# Lancer l'application au démarrage du conteneur
 CMD ["Rscript", "app.R"]
