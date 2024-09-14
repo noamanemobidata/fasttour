@@ -1,16 +1,16 @@
 FROM rstudio/r-base:4.4.1-focal
 
-# Ajout du dépôt Ubuntugis pour obtenir les dernières versions de GDAL et PROJ
+# Ajouter le dépôt Ubuntugis pour obtenir des versions spécifiques de GDAL et PROJ
 RUN apt-get update && \
     apt-get install -y software-properties-common && \
     add-apt-repository -y ppa:ubuntugis/ppa && \
     apt-get update
 
-# Installer les dépendances système nécessaires
+# Installer les dépendances système nécessaires, y compris libproj15 pour libproj.so.15
 RUN apt-get install -y \
         libgdal-dev \
         libgeos-dev \
-        libproj-dev \
+        libproj15 \
         libudunits2-dev \
         libnode-dev \
         libssl-dev \
@@ -31,7 +31,12 @@ RUN apt-get install -y \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Définir les variables d'environnement pour GDAL, PROJ et GEOS
+# Créer un lien symbolique si nécessaire (au cas où une autre version de PROJ serait présente)
+RUN if [ ! -f /usr/lib/libproj.so.15 ] && [ -f /usr/lib/libproj.so.19 ]; then \
+      ln -s /usr/lib/libproj.so.19 /usr/lib/libproj.so.15; \
+    fi
+
+# Définir les variables d'environnement pour GDAL et PROJ
 ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
 ENV C_INCLUDE_PATH=/usr/include/gdal
 ENV PROJ_LIB=/usr/share/proj
