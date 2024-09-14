@@ -1,12 +1,9 @@
-FROM  rstudio/r-base:4.4.1-focal
+FROM  rocker/geospatial:4.4.1
 
-RUN apt-get update &&  apt-get install --no-install-recommends -y jq librsvg2-2 libpq-dev libgdal-dev libgeos-dev libproj-dev libssl-dev libv8-dev libnode-dev  libudunits2-dev libsodium-dev libsecret-1-dev libcurl4-openssl-dev libsasl2-dev  odbc-postgresql gdal-bin libxml2-dev libpq-dev libglpk-dev
-
- 
 ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
 ENV C_INCLUDE_PATH=/usr/include/gdal
 
-RUN R -e "install.packages(c('renv', 'terra'), repos = c(CRAN = 'https://cloud.r-project.org'))"
+RUN R -e "install.packages(c('renv'), repos = c(CRAN = 'https://cloud.r-project.org'))"
 
 
 COPY renv.lock /renv.lock
