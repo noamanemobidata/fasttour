@@ -7,6 +7,7 @@ library(htmlwidgets)
 library(dplyr)
 library(shinyjs)
 library(glue)
+library(leaflet.extras2)
 
 source("utils.R")
 
@@ -90,7 +91,7 @@ server <- function(input, output, session) {
                                type = "tabs",
                                elevation = 2,
                                width = 12,
-                               footer =NULL, 
+                               footer =uiOutput("control_move"), 
                                status = "warning",
                                maximizable = F,
                                collapsible = TRUE, 
@@ -449,10 +450,30 @@ server <- function(input, output, session) {
       make_routes(res)-> routes
       
       leafletProxy("map_init") %>%
-        addRoutes(routes, cls[1:length(res[["routes"]])]  ) 
+        addRoutes(routes, cls[1:length(res[["routes"]])]  ) %>%
+        startMoving()
+      
+      output$control_move <- renderUI({
+        tagList(
+          
+          actionBttn(inputId = "pause", label = NULL, icon = icon("pause"),style = "material-circle",color = "default",size = 'xs'),
+          actionBttn(inputId = "resume", label = NULL, icon = icon("play"),style = "material-circle",color = "default",size = 'xs'),
+          actionBttn(inputId = "play", label = NULL, icon = icon("undo"),style = "material-circle",color = "default",size = 'xs')
+          
+        )
+      })
+       
     }else{
       
+    
       showNotification(ui = "Error ",type = "error")
+      output$control_move <- renderUI({
+        tagList(
+          
+          NULL
+          
+        )
+      })
       
     }
     
@@ -463,8 +484,26 @@ server <- function(input, output, session) {
   })
   
   
+  observeEvent(input$pause,{
+    
+    leafletProxy("map_init")%>%
+      pauseMoving()
+    
+  })
   
+  observeEvent(input$resume,{
+    
+    leafletProxy("map_init")%>%
+      resumeMoving()
+    
+  })
   
+  observeEvent(input$play,{
+    
+    leafletProxy("map_init")%>%
+      startMoving()
+    
+  })
   observeEvent(input$delete,{
     
     
