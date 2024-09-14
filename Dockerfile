@@ -2,7 +2,7 @@ FROM rstudio/r-base:4.4.1-focal
 
 # Combine RUN commands to reduce layers
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+    apt-get install -y \
         software-properties-common \
         libgdal-dev \
         libgeos-dev \
@@ -39,7 +39,8 @@ ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
 ENV C_INCLUDE_PATH=/usr/include/gdal
 
 # Install R packages
-RUN R -e "install.packages('renv', repos = c(CRAN = 'https://cloud.r-project.org'))"
+RUN R -e "install.packages(c('renv', 'terra'), repos = c(CRAN = 'https://cloud.r-project.org'))"
+
 COPY renv.lock /renv.lock
 RUN R -e 'renv::restore()'
 
