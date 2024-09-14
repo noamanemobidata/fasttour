@@ -43,7 +43,7 @@ ENV PROJ_LIB=/usr/share/proj
 ENV GDAL_DATA=/usr/share/gdal
 
 # Installer les packages R de base et renv
-RUN R -e "install.packages('renv', repos = 'https://cloud.r-project.org')"
+RUN R -e "install.packages(c('renv','terra'), repos = 'https://cloud.r-project.org')"
 
 # Copier le fichier renv.lock avant de restaurer les dépendances
 COPY renv.lock /renv.lock
