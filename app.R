@@ -8,6 +8,7 @@ library(dplyr)
 library(shinyjs)
 library(glue)
 library(leaflet.extras2)
+library(sf)
 
 source("utils.R")
 
